@@ -22,6 +22,10 @@ func (a *App) Connect() (*gorm.DB, error) {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
 
+	if err := db.AutoMigrate(&model.SearchHistory{}); err != nil {
+		log.Fatalf("Error migrating database: %v", err)
+	}
+
 	return db, nil
 }
 
