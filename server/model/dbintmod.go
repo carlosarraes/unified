@@ -33,9 +33,5 @@ func OpenDB(dsn string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err := db.Ping(); err != nil {
-		return nil, err
-	}
-
 	return gormDB, nil
 }
