@@ -2,31 +2,38 @@ package utils
 
 import (
 	"fmt"
+	"log"
+	"strconv"
+	"strings"
 
+	"github.com/carlosarraes/unified/server/model"
 	"github.com/gocolly/colly"
 )
 
-type Product struct {
-	Name  string `json:"name"`
-	Price string `json:"price"`
-	Link  string `json:"link"`
-}
-
-func ScrapeBuscape(s string) ([]Product, error) {
-	var products []Product
+func ScrapeBuscape(s string) ([]model.Product, error) {
+	var products []model.Product
 	c := colly.NewCollector()
 
 	c.OnHTML("a[data-testid='product-card::card']", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		name := e.ChildText("h2[data-testid='product-card::name']")
 		price := e.ChildText("p[data-testid='product-card::price']")
+		thumbnail := e.ChildAttr("img[alt*='Imagem de']", "src")
 
-		product := Product{
-			Name:  name,
-			Price: price,
-			Link:  link,
+		price = price[3:]
+		price = strings.ReplaceAll(price, ".", "")
+		price = strings.ReplaceAll(price, ",", ".")
+		price64, err := strconv.ParseFloat(price, 64)
+		if err != nil {
+			log.Printf("Error converting: %v", err)
 		}
-		fmt.Println(product)
+
+		product := model.Product{
+			Title:     name,
+			Price:     price64,
+			Link:      link,
+			Thumbnail: thumbnail,
+		}
 		products = append(products, product)
 	})
 
