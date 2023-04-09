@@ -2,69 +2,43 @@ package controller
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 
 	"github.com/carlosarraes/unified/server/model"
+	service "github.com/carlosarraes/unified/server/service"
 	"github.com/carlosarraes/unified/server/utils"
 )
-
-const mURL = "https://api.mercadolibre.com/sites/MLB/search?category="
-
-var meliCategoryCodes = map[string]string{
-	"tv":        "MLB1002",
-	"geladeira": "MLB181294",
-	"celular":   "MLB1055",
-}
-
-type MeliResponse struct {
-	Results []model.Product `json:"results"`
-}
 
 func (a *App) search(w http.ResponseWriter, r *http.Request) {
 	var searchQuery model.SearchQuery
 	json.NewDecoder(r.Body).Decode(&searchQuery)
 
-	if searchQuery.Web == "busca" {
-		products, err := utils.ScrapeBuscape(searchQuery.Category)
-		if err != nil {
-			log.Printf("Error: %v", err)
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(products)
-	} else {
-		resp, err := http.Get(mURL + meliCategoryCodes[searchQuery.Category])
-		if err != nil {
-			log.Printf("Error: %v", err)
-		}
-		defer resp.Body.Close()
-
-		data, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Printf("Error: %v", err)
-		}
-
-		var meliResponse MeliResponse
-		if err = json.Unmarshal(data, &meliResponse); err != nil {
-			log.Printf("Error Unmarshal: %v", err)
-		}
-
-		var products []model.Product
-		for _, product := range meliResponse.Results {
-			products = append(products, model.Product{
-				Title:     product.Title,
-				Price:     product.Price,
-				Link:      product.Link,
-				Thumbnail: product.Thumbnail,
-			})
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(products)
-
+	if searchQuery.Web == "" || searchQuery.Category == "" {
+		utils.WriteResponse(w, http.StatusBadRequest, "Invalid request")
+		return
 	}
+
+	mySql := a.DB
+	fromDb, err := service.GetFromDb(mySql, searchQuery.Web, searchQuery.Category)
+	if err == nil {
+		log.Println("Got from db")
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(fromDb)
+		return
+	}
+
+	products, err := getProductsFromMeliOrBuscape(searchQuery)
+	if err != nil {
+		utils.WriteResponse(w, http.StatusInternalServerError, "Error getting products")
+		return
+	}
+
+	if err := service.SaveToDb(mySql, products, searchQuery.Web, searchQuery.Category); err != nil {
+		utils.WriteResponse(w, http.StatusInternalServerError, "Error saving to db")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(products)
 }
