@@ -13,7 +13,7 @@ import (
 
 type App struct {
 	DSN string
-	DB  model.Data
+	DB  model.Database
 }
 
 func (a *App) Connect() (*gorm.DB, error) {

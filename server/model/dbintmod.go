@@ -2,15 +2,17 @@ package model
 
 import (
 	"database/sql"
+	"fmt"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-type Data interface{}
-
-type MySql struct {
-	*gorm.DB
+type Database interface {
+	Create(value interface{}) *gorm.DB
+	Find(out interface{}, where ...interface{}) *gorm.DB
+	Where(query interface{}, args ...interface{}) *gorm.DB
+	First(out interface{}, where ...interface{}) *gorm.DB
 }
 
 type SearchHistory struct {
@@ -30,10 +32,10 @@ type Product struct {
 type SearchQuery struct {
 	Web      string `json:"web"`
 	Category string `json:"category"`
-	Query    string `json:"query"`
 }
 
 func OpenDB(dsn string) (*gorm.DB, error) {
+	dsn = fmt.Sprintf("%s&parseTime=true", dsn)
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, err
