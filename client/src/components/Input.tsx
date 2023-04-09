@@ -8,7 +8,7 @@ const Input = ({ control, handleChange }: InputProps) => {
     <input
       name="search"
       type="text"
-      placeholder="Type here"
+      placeholder="Buscar Produto"
       value={control}
       onChange={handleChange}
       className="input input-bordered input-success w-full max-w-md border-sky-900"
