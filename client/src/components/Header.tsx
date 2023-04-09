@@ -7,10 +7,11 @@ type HeaderProps = {
     categorias: string
     search: string
   }
-  handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
 }
 
-const Header = ({ formControls, handleChange }: HeaderProps) => {
+const Header = ({ formControls, handleChange, handleSubmit }: HeaderProps) => {
   const webOptions = {
     disabledOption: 'Web',
     options: [
@@ -29,8 +30,8 @@ const Header = ({ formControls, handleChange }: HeaderProps) => {
   }
 
   return (
-    <header className="flex justify-center w-10/12 p-4 mt-2 shadow-sm">
-      <form className="flex justify-center items-center gap-4 w-full">
+    <header className="flex justify-center w-full p-4 mt-2 shadow-sm">
+      <form className="flex justify-center items-center gap-4 w-full" onSubmit={handleSubmit}>
         <Select
           name={webOptions.disabledOption.toLowerCase()}
           disabledOption={webOptions.disabledOption}
