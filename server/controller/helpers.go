@@ -63,32 +63,3 @@ func getProductsFromMeliOrBuscape(m model.SearchQuery) ([]model.Product, error) 
 		return products, nil
 	}
 }
-
-func getFromDb(s model.SearchHistory) []model.Product {
-	var products []model.Product
-	if err := json.Unmarshal(s.SearchResults, &products); err != nil {
-		log.Printf("Error Unmarshal: %v", err)
-	}
-
-	return products
-}
-
-func saveToDb(a *App, p []model.Product, web, category string) error {
-	productsBytes, err := json.Marshal(p)
-	if err != nil {
-		return err
-	}
-
-	searchHistory := model.SearchHistory{
-		Web:           web,
-		Category:      category,
-		SearchResults: productsBytes,
-	}
-
-	result := a.DB.Create(&searchHistory)
-	if result.Error != nil {
-		return result.Error
-	}
-
-	return nil
-}
