@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -10,61 +9,38 @@ import (
 	"github.com/carlosarraes/unified/server/utils"
 )
 
-const mURL = "https://api.mercadolibre.com/sites/MLB/search?category="
-
-var meliCategoryCodes = map[string]string{
-	"tv":        "MLB1002",
-	"geladeira": "MLB181294",
-	"celular":   "MLB1055",
-}
-
-type MeliResponse struct {
-	Results []model.Product `json:"results"`
-}
-
 func (a *App) search(w http.ResponseWriter, r *http.Request) {
 	var searchQuery model.SearchQuery
 	json.NewDecoder(r.Body).Decode(&searchQuery)
 
-	if searchQuery.Web == "busca" {
-		products, err := utils.ScrapeBuscape(searchQuery.Category)
-		if err != nil {
-			log.Printf("Error: %v", err)
-		}
+	if searchQuery.Web == "" || searchQuery.Category == "" {
+		utils.WriteResponse(w, http.StatusBadRequest, "Invalid request")
+		return
+	}
+
+	var search model.SearchHistory
+	checkDb := a.DB.Where("web = ? AND category = ?", searchQuery.Web, searchQuery.Category).First(&search)
+
+	if checkDb.RowsAffected > 0 {
+		fromDb := getFromDb(search)
+		log.Println("from db")
 
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(products)
+		json.NewEncoder(w).Encode(fromDb)
 	} else {
-		resp, err := http.Get(mURL + meliCategoryCodes[searchQuery.Category])
+		products, err := getProductsFromMeliOrBuscape(searchQuery)
 		if err != nil {
-			log.Printf("Error: %v", err)
-		}
-		defer resp.Body.Close()
-
-		data, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Printf("Error: %v", err)
+			utils.WriteResponse(w, http.StatusInternalServerError, "Error getting products")
+			return
 		}
 
-		var meliResponse MeliResponse
-		if err = json.Unmarshal(data, &meliResponse); err != nil {
-			log.Printf("Error Unmarshal: %v", err)
-		}
-
-		var products []model.Product
-		for _, product := range meliResponse.Results {
-			products = append(products, model.Product{
-				Title:     product.Title,
-				Price:     product.Price,
-				Link:      product.Link,
-				Thumbnail: product.Thumbnail,
-			})
+		if err := saveToDb(a, products, searchQuery.Web, searchQuery.Category); err != nil {
+			utils.WriteResponse(w, http.StatusInternalServerError, "Error saving to db")
+			log.Printf("Error saving to db: %v", err)
+			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(products)
-
 	}
 }
