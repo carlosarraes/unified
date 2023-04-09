@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/carlosarraes/unified/server/model"
+	"github.com/carlosarraes/unified/server/services"
 	"github.com/carlosarraes/unified/server/utils"
 )
 
@@ -18,29 +19,26 @@ func (a *App) search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var search model.SearchHistory
-	checkDb := a.DB.Where("web = ? AND category = ?", searchQuery.Web, searchQuery.Category).First(&search)
-
-	if checkDb.RowsAffected > 0 {
-		fromDb := getFromDb(search)
-		log.Println("from db")
-
+	mySql := a.DB
+	fromDb, err := services.GetFromDb(mySql, searchQuery.Web, searchQuery.Category)
+	if err == nil {
+		log.Println("Got from db")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(fromDb)
-	} else {
-		products, err := getProductsFromMeliOrBuscape(searchQuery)
-		if err != nil {
-			utils.WriteResponse(w, http.StatusInternalServerError, "Error getting products")
-			return
-		}
-
-		if err := saveToDb(a, products, searchQuery.Web, searchQuery.Category); err != nil {
-			utils.WriteResponse(w, http.StatusInternalServerError, "Error saving to db")
-			log.Printf("Error saving to db: %v", err)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(products)
+		return
 	}
+
+	products, err := getProductsFromMeliOrBuscape(searchQuery)
+	if err != nil {
+		utils.WriteResponse(w, http.StatusInternalServerError, "Error getting products")
+		return
+	}
+
+	if err := services.SaveToDb(mySql, products, searchQuery.Web, searchQuery.Category); err != nil {
+		utils.WriteResponse(w, http.StatusInternalServerError, "Error saving to db")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(products)
 }
