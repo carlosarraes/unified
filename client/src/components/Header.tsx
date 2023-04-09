@@ -22,7 +22,7 @@ const Header = ({ formControls, handleChange }: HeaderProps) => {
   const categoriesOptions = {
     disabledOption: 'Categorias',
     options: [
-      { value: 'geladeria', label: 'Geladeira' },
+      { value: 'geladeira', label: 'Geladeira' },
       { value: 'tv', label: 'TV' },
       { value: 'celular', label: 'Celular' },
     ],
