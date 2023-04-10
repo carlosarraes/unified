@@ -56,7 +56,7 @@ function App() {
   }
 
   return (
-    <main className="flex flex-col justify-center items-center w-8/12">
+    <main className="flex flex-col justify-center items-center w-11/12 sm:w-8/12">
       <Header
         formControls={formControls}
         handleChange={handleInputChange}
