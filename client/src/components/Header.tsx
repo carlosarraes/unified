@@ -31,8 +31,11 @@ const Header = ({ formControls, handleChange, handleSubmit, validateBtn }: Heade
   }
 
   return (
-    <header className="flex justify-center w-full p-4 mt-2 shadow-sm">
-      <form className="flex justify-center items-center gap-4 w-full" onSubmit={handleSubmit}>
+    <header className="flex justify-center w-full p-2 mt-2 shadow-sm">
+      <form
+        className="flex flex-col justify-center items-center gap-4 w-full md:flex-row"
+        onSubmit={handleSubmit}
+      >
         <Select
           name={webOptions.disabledOption.toLowerCase()}
           disabledOption={webOptions.disabledOption}
@@ -49,7 +52,7 @@ const Header = ({ formControls, handleChange, handleSubmit, validateBtn }: Heade
         />
         <Input control={formControls.search} handleChange={handleChange} />
         <button
-          className="btn btn-info bg-sky-600 text-white"
+          className="btn btn-info bg-sky-600 text-white w-full md:w-1/5 max-w-xs"
           type="submit"
           disabled={validateBtn()}
         >

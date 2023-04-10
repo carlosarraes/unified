@@ -14,7 +14,7 @@ type SelectProps = {
 const Select = ({ name, disabledOption, options, control, handleChange }: SelectProps) => {
   return (
     <select
-      className="select w-1/4 max-w-xs text-white bg-sky-900"
+      className="select w-full max-w-xs text-white bg-sky-900 md:w-1/5"
       aria-label={name}
       name={name}
       value={control}
