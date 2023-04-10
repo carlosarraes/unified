@@ -9,9 +9,10 @@ type HeaderProps = {
   }
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
+  validateBtn: () => boolean
 }
 
-const Header = ({ formControls, handleChange, handleSubmit }: HeaderProps) => {
+const Header = ({ formControls, handleChange, handleSubmit, validateBtn }: HeaderProps) => {
   const webOptions = {
     disabledOption: 'Web',
     options: [
@@ -47,7 +48,11 @@ const Header = ({ formControls, handleChange, handleSubmit }: HeaderProps) => {
           handleChange={handleChange}
         />
         <Input control={formControls.search} handleChange={handleChange} />
-        <button className="btn btn-info bg-sky-600 text-white" type="submit">
+        <button
+          className="btn btn-info bg-sky-600 text-white"
+          type="submit"
+          disabled={validateBtn()}
+        >
           Search
         </button>
       </form>
