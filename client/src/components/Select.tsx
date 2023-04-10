@@ -15,6 +15,7 @@ const Select = ({ name, disabledOption, options, control, handleChange }: Select
   return (
     <select
       className="select w-1/4 max-w-xs text-white bg-sky-900"
+      aria-label={name}
       name={name}
       value={control}
       onChange={handleChange}

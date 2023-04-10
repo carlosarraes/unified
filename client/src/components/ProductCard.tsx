@@ -8,7 +8,7 @@ const ProductCard = ({ thumbnail, title, price, permalink }: Product) => {
   return (
     <div className="flex w-10/12 bg-white gap-4 p-4 rounded-md shadow-md">
       {thumbnail.startsWith('data:') ? (
-        <img src={Placeholder} alt={title} className="ml-3 w-32" />
+        <img src={Placeholder} alt={title} data-testid="placeholder" className="ml-3 w-32" />
       ) : (
         <img src={thumbnail} alt={title} className="ml-3 w-32" />
       )}
