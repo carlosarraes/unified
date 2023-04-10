@@ -21,8 +21,9 @@ const buscaMockData = [
 ]
 
 export const handlers = [
-  rest.post(url + 'search', (req, res, ctx) => {
-    if (req.body.web === 'meli') {
+  rest.post(url + 'search', async (req, res, ctx) => {
+    const body = await req.json()
+    if (typeof body === 'object' && body !== null && body.web === 'meli') {
       return res(ctx.status(200), ctx.json(meliMockData))
     }
     return res(ctx.status(200), ctx.json(buscaMockData))
