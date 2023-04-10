@@ -3,6 +3,8 @@ import Placeholder from '../assets/placeholder.png'
 import { formatCurrency } from '../utils/formatCurrency'
 
 const ProductCard = ({ thumbnail, title, price, permalink }: Product) => {
+  const link = permalink.startsWith('http') ? permalink : `https://www.buscape.com.br${permalink}`
+
   return (
     <div className="flex w-10/12 bg-white gap-4 p-4 rounded-md shadow-md">
       {thumbnail.startsWith('data:') ? (
@@ -16,7 +18,7 @@ const ProductCard = ({ thumbnail, title, price, permalink }: Product) => {
         </h1>
         <div className="flex justify-between mt-8 gap-4">
           <p className="mt-4 text-right text-xl">{formatCurrency(price)}</p>
-          <a href={permalink} className="text-right">
+          <a href={link} className="text-right">
             <button className="btn btn-info bg-sky-900 text-white">Ir a Web</button>
           </a>
         </div>
