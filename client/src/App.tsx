@@ -4,7 +4,7 @@ import Showcase from './components/Showcase'
 import type { Product } from './components/Showcase'
 import Spinner from './components/Spinner'
 
-const API_URL = 'http://localhost:8080/search'
+const API_URL = 'https://gouni-4wgfen3n5q-rj.a.run.app/search'
 
 function App() {
   const [formControls, setFormControls] = useState({
