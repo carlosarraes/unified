@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Header from './components/Header'
 import Showcase from './components/Showcase'
+import type { Product } from './components/Showcase'
 import Spinner from './components/Spinner'
 
-const API_URL = 'http://localhost:8080/search'
+const API_URL = 'https://gouni-4wgfen3n5q-rj.a.run.app/search'
 
 function App() {
   const [formControls, setFormControls] = useState({
@@ -11,13 +12,25 @@ function App() {
     categorias: '',
     search: '',
   })
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState<Product[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormControls({ ...formControls, [name]: value })
   }
+
+  useEffect(() => {
+    const { search } = formControls
+    const searchKeywords = search.toLowerCase().split(' ')
+
+    setFilteredProducts(
+      products.filter((product) =>
+        searchKeywords.every((keyword) => product.title.toLowerCase().includes(keyword)),
+      ),
+    )
+  }, [formControls.search, products])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -33,9 +46,13 @@ function App() {
     })
     const data = await response.json()
 
-    console.log(data)
     setProducts(data)
     setLoading(false)
+  }
+
+  const validateBtn = () => {
+    const { web, categorias } = formControls
+    return web === '' || categorias === ''
   }
 
   return (
@@ -44,8 +61,9 @@ function App() {
         formControls={formControls}
         handleChange={handleInputChange}
         handleSubmit={handleSubmit}
+        validateBtn={validateBtn}
       />
-      {loading ? <Spinner size={48} /> : <Showcase products={products} />}
+      {loading ? <Spinner size={48} /> : <Showcase products={filteredProducts} />}
     </main>
   )
 }
