@@ -1,5 +1,24 @@
 # Unified Store
 
+## Frontend
+
+The frontend is built with React and TypeScript, and is deployed on Vercel. It utilizes Tailwind CSS and DaisyUI for styling, and Lucide React for icons. The design is completely modular, making it easy to add more APIs and categories in the future.
+
+Please note that it may take a few seconds to retrieve data from the backend due to cold start delays.
+
+### Technologies
+
+- React (with TypeScript)
+- Tailwind CSS
+- DaisyUI
+- Lucide React
+
+### Modular Design
+
+The frontend's modular design ensures that adding new APIs or categories is a straightforward process. This flexible architecture enables the application to grow and adapt to new requirements with ease.
+
+**Note:** Due to cold start delays, it might take a few seconds for the frontend to fetch data from the backend.
+
 ## Backend
 
 This backend is written in Go, utilizing the Go-chi and Gorm libraries. It is designed as a stateless API with a single powerful endpoint (POST) at `/search`. The backend follows the MSC (Model, Service, Controller) architecture.
