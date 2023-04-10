@@ -14,7 +14,7 @@ type ShowcaseProps = {
 
 const Showcase = ({ products }: ShowcaseProps) => {
   return (
-    <section className="flex flex-wrap gap-4 justify-center items-center w-full h-8/12 overflow-y-auto">
+    <section className="flex flex-col gap-4 justify-center mt-6 items-center w-full h-8/12 overflow-y-auto">
       {products.length === 0 ? (
         <h1 className="flex gap-2 items-center mt-8 text-4xl font-bold text-gray-700">
           Faça sua pesquisa
