@@ -16,8 +16,9 @@ const Header = ({ formControls, handleChange, handleSubmit, validateBtn }: Heade
   const webOptions = {
     disabledOption: 'Web',
     options: [
-      { value: 'meli', label: 'MercadoLivre' },
+      { value: 'meliscr', label: 'MercadoLivre (Scrape)' },
       { value: 'busca', label: 'BuscaPé' },
+      { value: 'meli', label: 'MercadoLivre (API)' },
     ],
   }
 
