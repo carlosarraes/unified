@@ -23,7 +23,7 @@ const Showcase = ({ products }: ShowcaseProps) => {
           </span>
         </h1>
       ) : (
-        products.map((product) => <ProductCard key={product.title} {...product} />)
+        products.map((product, i) => <ProductCard key={i} {...product} />)
       )}
     </section>
   )
