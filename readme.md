@@ -1,5 +1,9 @@
 # Unified Store
 
+# Errata
+
+Added MercadoLivre (Scrape) option too.
+
 ## Frontend
 
 The frontend is built with React and TypeScript, and is deployed on Vercel. It utilizes Tailwind CSS and DaisyUI for styling, and Lucide React for icons. The design is completely modular, making it easy to add more APIs and categories in the future.
