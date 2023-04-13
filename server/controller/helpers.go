@@ -23,8 +23,8 @@ type MeliResponse struct {
 }
 
 func getProductsFromMeliOrBuscape(m model.SearchQuery) ([]model.Product, error) {
-	if m.Web == "busca" {
-		products, err := utils.ScrapeBuscape(m.Category)
+	if m.Web == "busca" || m.Web == "meliscr" {
+		products, err := utils.Scrape(m.Category, m.Web)
 		if err != nil {
 			log.Printf("Error: %v", err)
 			return nil, err
